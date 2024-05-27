@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 public class Evento {
     private String titolo;
     private final LocalDate data;
-    private final int totalSeats;
+    private int totalSeats;
     private int bookedSeats = 0;
 
 //    CONSTRUCTOR
@@ -63,19 +63,38 @@ public class Evento {
     }
 
     //    METODO PER PRENOTARE
-    public void booking(int seats) {
-        if (!(this.data.isBefore(LocalDate.now()) && (seats < (totalSeats - bookedSeats)))) {
+    public void booking(int seats) throws Exception {
+        if (checkSeats(seats, 1)) {
+
             this.bookedSeats += seats;
+            this.totalSeats -= seats;
         }
     }
 
     //    METODO PER DISDIRE
     public void disdire(int seats) {
-        if (!(this.data.isBefore(LocalDate.now()) && (seats > totalSeats))) {
+        if (checkSeats(seats, 2)) {
+
             this.bookedSeats -= seats;
+            this.totalSeats += seats;
         }
+
     }
 
+    private boolean checkSeats(int seats, int i) {
+        switch (i) {
+            case 1:
+                if (seats > this.totalSeats) {
+                    throw new IllegalArgumentException("Non ci sono abbastanza posti disponibili.");
+                }
+                break;
+            case 2:
+                if (seats > this.bookedSeats) {
+                    throw new IllegalArgumentException("Non ci sono abbastanza posti prenotati da disdire.");
+                }
+        }
+        return true;
+    }
 
 //    OVERRIDE toString
 
